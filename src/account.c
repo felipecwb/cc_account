@@ -1,15 +1,3 @@
-/*
- *
- * autor: Felipe Aparecido Francisco
- * email: felipefrancisco.cwb@gmail.com
- * matricula: 1512914
- * 
- * curso: Analise e desenvolvimento de sistemas
- * turma: J
- *
- * Account Implementation
- *
- */
 
 #include "account.h"
 #include <stdio.h>
