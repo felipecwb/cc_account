@@ -1,5 +1,8 @@
 
 #include "account.h"
+
+#ifdef _CC_ACCOUNT
+
 #include <stdio.h>
 
 /**
@@ -49,8 +52,7 @@ int account_add(account_t cc)
         return 0;
     }
 
-    cc_storage[cc_storage_point] = cc;
-    cc_storage_point++;
+    cc_storage[++cc_storage_point] = cc;
 
     return 1;
 }
@@ -77,10 +79,12 @@ int account_delete(account_t *cc)
 
     // swap
     cc_storage[i] = cc_storage[cc_storage_point];
-    // hackround
+    // hackround for stop and hide the suppost deleted
     cc_storage[cc_storage_point].code = 0;
     cc_storage_point--;
 
     return 1;
 }
+
+#endif // _CC_ACCOUNT
 

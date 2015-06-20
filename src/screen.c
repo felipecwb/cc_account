@@ -1,8 +1,9 @@
 
 #include "screen.h"
 
+#ifdef _CC_SCREEN
+
 #include <stdio.h>
-#include <locale.h>
 
 // API implementation of platform environment
 #ifdef WIN32
@@ -13,15 +14,12 @@
 
 void screen_menu()
 {
-    // support for UTF8 characters
-    setlocale(LC_ALL, "");
-
     screen_menu_print();
 
     int option;
 
     fflush(stdin);
-    printf("Entre com a opção digitado: ");
+    printf("Entre com a opcao digitado: ");
     scanf("%d", &option);
 
     getc(stdin);
@@ -40,7 +38,7 @@ void screen_menu()
             return; // getting out now guys
             break;
         default:
-            printf("***** Opção desejada não é válida! *****\n");
+            printf("***** Opcao desejada nao e valida! *****\n");
             CC_PAUSE
             break;
     }
@@ -69,9 +67,9 @@ void screen_list()
 
     int i;
     for (i = 0; i < QTD_ACCOUNTS; i++) {
-        if (! (list + i)->code) {
+        if (! list[i].code) {
             if (i == 0) {
-                printf("\nNão há contas cadastradas\n");
+                printf("\nNao ha contas cadastradas\n");
             }
  
             break;
@@ -115,6 +113,8 @@ void screen_add(int header)
     account_t cc;
     cc.code = code;
 
+    //gets(char *); // is deprected here
+
     fflush(stdin);
     printf("Nome: ");
     scanf("%s[^\n]", cc.name);
@@ -124,23 +124,23 @@ void screen_add(int header)
     scanf("%s[^\n]", cc.email);
 
     fflush(stdin);
-    printf("Endereço - Rua: ");
+    printf("Endereco - Rua: ");
     scanf("%s[^\n]", cc.address.street);
 
     fflush(stdin);
-    printf("Endereço - Número: ");
+    printf("Endereco - Número: ");
     scanf("%d", &cc.address.number);
 
     fflush(stdin);
-    printf("Endereço - Bairro: ");
+    printf("Endereco - Bairro: ");
     scanf("%s[^\n]", cc.address.district);
 
     fflush(stdin);
-    printf("Endereço - Cidade: ");
+    printf("Endereco - Cidade: ");
     scanf("%s[^\n]", cc.address.city);
 
     fflush(stdin);
-    printf("Endereço - Estado (UF): ");
+    printf("Endereco - Estado (UF): ");
     scanf("%s[^\n]", cc.address.state);
 
     printf("\n");
@@ -150,7 +150,7 @@ void screen_add(int header)
     if (result) {
         printf("Conta cadastrada!\n");
     } else {
-        printf("Conta NÃO cadastrada! Código < 100 OU codigo já existe.\n");
+        printf("Conta NAO cadastrada! Codigo < 100 OU codigo já existe.\n");
     }
 
     screen_add(0);
@@ -177,7 +177,7 @@ void screen_delete(int header)
 
     unsigned int code;
 
-    printf("Código da conta a ser excluida: ");
+    printf("Codigo da conta a ser excluida: ");
     scanf("%d", &code);
 
     if (code == 0) {
@@ -187,7 +187,7 @@ void screen_delete(int header)
     account_t *cc = account_find_by_code(code);
 
     if (cc == NULL) {
-        printf("\n*** Código não encontrado no cadastro!\n\n");
+        printf("\n*** Codigo não encontrado no cadastro!\n\n");
         return screen_delete(0);
     }
 
@@ -196,7 +196,7 @@ void screen_delete(int header)
     char del;
 
     getc(stdin);// fflush does not work here
-    printf("Confirmar exclusão desta conta? (s/n): ");
+    printf("Confirmar exclusao desta conta? (s/n): ");
     scanf("%c", &del);
 
     if (del == 's' || del == 'S') {
@@ -210,13 +210,13 @@ void screen_delete(int header)
 
     } else if (del == 'n' || del == 'N') {
 
-        printf("\n - Conta não excluida.\n");
+        printf("\n - Conta nao excluida.\n");
         CC_PAUSE
 
         return screen_delete(1);
     } else {
         // eastern egg
-        printf("\n ** É Sim ou não!!! Tente de novo.**\n");
+        printf("\n ** E Sim ou não!!! Tente de novo.**\n");
     }
 
     CC_PAUSE
@@ -270,4 +270,5 @@ static void screen_account_print(account_t *cc)
     printf("\n");
 }
 
+#endif // _CC_SCREEN
 

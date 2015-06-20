@@ -4,7 +4,7 @@
 
 // define quantity if not defined
 #ifndef QTD_ACCOUNTS
-#define QTD_ACCOUNTS 50
+#  define QTD_ACCOUNTS 50
 #endif
 
 /**
@@ -44,7 +44,7 @@ typedef struct s_account account_t;
 #else
     static account_t cc_storage[QTD_ACCOUNTS] = {
         {100,"Felipe Francisco","felipe@francisco.com",{"Someplace there",2000,"Green Village","Curitiba","PR"}},
-        {101,"Petter Pan","petter@pan.com",{"Unknown",1000,"??","In the magic","UU"}}
+        {101,"Petter Pan","petter@pan.com",{"Magic Place",1000,"??","In the magic","UU"}}
     };
     static int cc_storage_point = 1;
 #endif
