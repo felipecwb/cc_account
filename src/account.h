@@ -2,6 +2,11 @@
 #ifndef _CC_ACCOUNT
 #define _CC_ACCOUNT 1
 
+// null guy
+#ifndef NULL
+#  define NULL ((void *) 0)
+#endif
+
 // define quantity if not defined
 #ifndef QTD_ACCOUNTS
 #  define QTD_ACCOUNTS 50

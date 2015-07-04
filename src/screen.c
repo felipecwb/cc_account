@@ -12,39 +12,33 @@
 #  include "../platform/unix.h"
 #endif
 
-void screen_menu()
+/**
+ * the menu
+ */
+void screen_menu_print()
 {
-    screen_menu_print();
-
-    int option;
-
-    fflush(stdin);
-    printf("Entre com a opcao digitado: ");
-    scanf("%d", &option);
-
-    getc(stdin);
-
-    switch(option) {
-        case 1:
-            screen_add(1);
-            break;
-        case 2:
-            screen_list();
-            break;
-        case 3:
-            screen_delete(1);
-            break;
-        case 4:
-            return; // getting out now guys
-            break;
-        default:
-            printf("***** Opcao desejada nao e valida! *****\n");
-            CC_PAUSE
-            break;
-    }
-
-    // call me again haha
-    screen_menu();
+    // header
+    CC_CLEAR
+    printf("+------------------------------------------------------------------------------+\n");
+    printf("|        ccccccccccccccc    ccccccccccccccc                                    |\n");
+    printf("|       ccccccccccccccc    ccccccccccccccc                                     |\n");
+    printf("|       cccc               cccc                                                |\n");
+    printf("|       cccc               cccc                                                |\n");
+    printf("|       cccc               cccc                                                |\n");
+    printf("|       ccccccccccccccc    ccccccccccccccc       TTTTT  OOO  TTTTT AAAAA L     |\n");
+    printf("|        ccccccccccccccc    ccccccccccccccc        T   O   O   T   A   A L     |\n");
+    printf("|                                                  T   O   O   T   A A A L     |\n");
+    printf("|                                                  T    OOO    T   A   A LLLL  |\n");
+    printf("|                                                                              |\n");
+    printf("+------------------------------------------------------------------------------+\n");
+    printf("|                                                                              |\n");
+    printf("|                       1 - Cadastrar Conta Corrente                           |\n");
+    printf("|                       2 - Listar Conta Corrente                              |\n");
+    printf("|                       3 - Excluir Conta Corrente                             |\n");
+    printf("|                                                                              |\n");
+    printf("|                       4 - Sair                                               |\n");
+    printf("|                                                                              |\n");
+    printf("+------------------------------------------------------------------------------+\n");
 }
 
 /**
@@ -52,68 +46,80 @@ void screen_menu()
  */
 void screen_list()
 {
+    // header
     CC_CLEAR
-
     printf("+------------------------------------------------------------------------------+\n");
     printf("|                                                                              |\n");
     printf("|                          Listar Conta Corrente                               |\n");
     printf("|                                                                              |\n");
     printf("+------------------------------------------------------------------------------+\n");
-    printf("|                                                                              |\n");
-    printf("+------------------------------------------------------------------------------+\n");
 
-    account_t *list;
-    list = account_list();
-
-    int i;
-    for (i = 0; i < QTD_ACCOUNTS; i++) {
-        if (! list[i].code) {
-            if (i == 0) {
-                printf("\nNao ha contas cadastradas\n");
-            }
- 
-            break;
-        }
-
-        screen_account_print(list + i);
-    }
+    printf("\n");
+    // show the account, first zero
+    screen_list_cc(0);
 
     CC_PAUSE
+}
+
+static void screen_list_cc(int index)
+{
+    // get the specific index of list
+    account_t cc = account_list()[index];
+
+    // invalid code, no more accounts
+    if (! cc.code) {
+        // no accounts in program
+        if (index == 0) {
+            printf("\nNao ha contas cadastradas\n");
+        }
+
+        return;
+    }
+
+    // print account
+    screen_account_print(&cc);
+
+    // get next
+    screen_list_cc(++index);
 }
 
 /**
  * add an checking account
  */
-void screen_add(int header)
+void screen_add()
 {
-    if (header) {
-        CC_CLEAR
+    unsigned int code = 1;
 
-        printf("+------------------------------------------------------------------------------+\n");
-        printf("|                                                                              |\n");
-        printf("|                          Cadastrar Conta Corrente                            |\n");
-        printf("|                                                                              |\n");
-        printf("+------------------------------------------------------------------------------+\n");
-        printf("|                                                                              |\n");
-        printf("|            Entre com o numero de conta ou 0 para encerrar                    |\n");
-        printf("|                                                                              |\n");
-        printf("+------------------------------------------------------------------------------+\n");
+    // screen header
+    CC_CLEAR
+    printf("+------------------------------------------------------------------------------+\n");
+    printf("|                                                                              |\n");
+    printf("|                          Cadastrar Conta Corrente                            |\n");
+    printf("|                                                                              |\n");
+    printf("+------------------------------------------------------------------------------+\n");
+    printf("|                                                                              |\n");
+    printf("|            Entre com o numero de conta ou 0 para encerrar                    |\n");
+    printf("|                                                                              |\n");
+    printf("+------------------------------------------------------------------------------+\n");
+
+    while (code != 0) {
+        printf("\n==> Informe o numero da nova conta: ");
+        scanf("%d", &code);
+        
+        if (code == 0) {
+            break; //loop
+        }
+
+        screen_add_cc(code);
     }
+}
 
-    unsigned int code;
-
-    printf("\n==> Informe o numero da nova conta: ");
-    scanf("%d", &code);
-
-    if (code == 0) {
-        return; // finish
-    }
-
-    // add proccess
+static void screen_add_cc(unsigned int code)
+{
+    int result;
     account_t cc;
-    cc.code = code;
 
-    //gets(char *); // is deprected here
+    cc.code = code;
 
     fflush(stdin);
     printf("Nome: ");
@@ -143,113 +149,101 @@ void screen_add(int header)
     printf("Endereco - Estado (UF): ");
     scanf("%s[^\n]", cc.address.state);
 
-    printf("\n");
+    result = account_add(cc);
 
-    int result = account_add(cc);
 
     if (result) {
         printf("Conta cadastrada!\n");
     } else {
         printf("Conta NAO cadastrada! Codigo < 100 OU codigo já existe.\n");
     }
+}
 
-    screen_add(0);
+// to print the header
+static void screen_delete_print()
+{
+    // screen header
+    CC_CLEAR
+    printf("+------------------------------------------------------------------------------+\n");
+    printf("|                                                                              |\n");
+    printf("|                         Excluir Conta Corrente                               |\n");
+    printf("|                                                                              |\n");
+    printf("+------------------------------------------------------------------------------+\n");
+    printf("|                                                                              |\n");
+    printf("|            Entre com o numero de conta ou 0 para encerrar                    |\n");
+    printf("|                                                                              |\n");
+    printf("+------------------------------------------------------------------------------+\n");
 }
 
 /**
  * screen to delete
  */
-void screen_delete(int header)
+void screen_delete()
 {
-    if (header) {
-        CC_CLEAR
-
-        printf("+------------------------------------------------------------------------------+\n");
-        printf("|                                                                              |\n");
-        printf("|                         Excluir Conta Corrente                               |\n");
-        printf("|                                                                              |\n");
-        printf("+------------------------------------------------------------------------------+\n");
-        printf("|                                                                              |\n");
-        printf("|            Entre com o numero de conta ou 0 para encerrar                    |\n");
-        printf("|                                                                              |\n");
-        printf("+------------------------------------------------------------------------------+\n");
-    }
-
-    unsigned int code;
-
-    printf("Codigo da conta a ser excluida: ");
-    scanf("%d", &code);
-
-    if (code == 0) {
-        return; // bye bye guys
-    }
-
-    account_t *cc = account_find_by_code(code);
-
-    if (cc == NULL) {
-        printf("\n*** Codigo não encontrado no cadastro!\n\n");
-        return screen_delete(0);
-    }
-
-    screen_account_print(cc);
-
+    unsigned int code = 1;
+    account_t *cc;
     char del;
 
-    getc(stdin);// fflush does not work here
-    printf("Confirmar exclusao desta conta? (s/n): ");
-    scanf("%c", &del);
+    // header
+    screen_delete_print();
 
-    if (del == 's' || del == 'S') {
-        int status = account_delete(cc);
+    while (code != 0) {
+        printf("Codigo da conta a ser excluida: ");
+        scanf("%d", &code);
 
-        if (status) {
-            printf("\n - Conta excluida com sucesso!\n");
-        } else {
-            printf("\n - Ocorreu algum problema verifique o numero da conta.\n");
+        if (code == 0) {
+            break;// getting out
         }
 
-    } else if (del == 'n' || del == 'N') {
+        // find account
+        cc = account_find_by_code(code);
 
-        printf("\n - Conta nao excluida.\n");
-        CC_PAUSE
+        if (cc == NULL) {
+            printf("\n*** Codigo não encontrado no cadastro!\n\n");
+            continue;
+        }
 
-        return screen_delete(1);
-    } else {
-        // eastern egg
-        printf("\n ** E Sim ou não!!! Tente de novo.**\n");
+        screen_account_print(cc);
+
+        // confirm delete
+        getc(stdin);// fflush does not work here
+        printf("Confirmar exclusao desta conta? (s/n): ");
+        scanf("%c", &del);
+
+        screen_delete_cc(cc, &del);
     }
-
-    CC_PAUSE
-    screen_delete(0);
 }
 
-/**
- * the menu
- */
-void screen_menu_print()
+static void screen_delete_cc(account_t *cc, char *op)
 {
-    CC_CLEAR
+    int status;
 
-    printf("+------------------------------------------------------------------------------+\n");
-    printf("|        ccccccccccccccc    ccccccccccccccc                                    |\n");
-    printf("|       ccccccccccccccc    ccccccccccccccc                                     |\n");
-    printf("|       cccc               cccc                                                |\n");
-    printf("|       cccc               cccc                                                |\n");
-    printf("|       cccc               cccc                                                |\n");
-    printf("|       ccccccccccccccc    ccccccccccccccc       TTTTT  OOO  TTTTT AAAAA L     |\n");
-    printf("|        ccccccccccccccc    ccccccccccccccc        T   O   O   T   A   A L     |\n");
-    printf("|                                                  T   O   O   T   A A A L     |\n");
-    printf("|                                                  T    OOO    T   A   A LLLL  |\n");
-    printf("|                                                                              |\n");
-    printf("+------------------------------------------------------------------------------+\n");
-    printf("|                                                                              |\n");
-    printf("|                       1 - Cadastrar Conta Corrente                           |\n");
-    printf("|                       2 - Listar Conta Corrente                              |\n");
-    printf("|                       3 - Excluir Conta Corrente                             |\n");
-    printf("|                                                                              |\n");
-    printf("|                       4 - Sair                                               |\n");
-    printf("|                                                                              |\n");
-    printf("+------------------------------------------------------------------------------+\n");
+    switch (*op) {
+        case 's':
+        case 'S':
+            status = account_delete(cc);
+
+            if (status) {
+                printf("\n - Conta excluida com sucesso!\n");
+            } else {
+                printf("\n - Ocorreu algum problema verifique o numero da conta.\n");
+            }
+
+            CC_PAUSE
+
+            break;
+        case 'n':
+        case 'N':
+            printf("\n - Conta nao excluida.\n");
+
+            // do you want the delete screen again
+            screen_delete_print();
+
+            break;
+        default:
+            printf("\n ** E Sim ou não!!! Tente de novo.**\n");
+            CC_PAUSE
+    }
 }
 
 /**
@@ -258,7 +252,7 @@ void screen_menu_print()
  */
 static void screen_account_print(account_t *cc)
 {
-    printf("\n==> Conta Corrente: %d\n", cc->code);
+    printf("==> Conta Corrente: %d\n", cc->code);
     printf("Nome: %s\n", cc->name);
     printf("Email: %s\n", cc->email);
     printf("Endereço: \n");

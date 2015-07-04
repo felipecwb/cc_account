@@ -3,8 +3,6 @@
 
 #ifdef _CC_ACCOUNT
 
-#include <stdio.h>
-
 /**
  * LIST
  */
@@ -19,17 +17,13 @@ account_t *account_list()
 account_t *account_find_by_code(unsigned int code)
 {
     int i;
-    for (i = 0; i < QTD_ACCOUNTS; i++) {
-        if (! cc_storage[i].code) {
-            return NULL;
-        }
-
+    for (i = 0; i <= cc_storage_point; i++) {
         if (cc_storage[i].code == code) {
             return &cc_storage[i];
         }
     }
 
-    return NULL;
+    return (account_t *)NULL;
 }
 
 /**
@@ -67,11 +61,7 @@ int account_delete(account_t *cc)
     }
 
     int i;
-    for (i = 0; i < QTD_ACCOUNTS; i++) {
-         if (! cc_storage[i].code) {
-             return 0;
-         }
-
+    for (i = 0; i <= cc_storage_point; i++) {
         if (cc_storage[i].code == cc->code) {
             break;
         }
